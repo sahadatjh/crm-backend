@@ -45,6 +45,8 @@
 | `GET` | `/clients/:id` | Get detailed client profile & linked projects | Permission: `clients.read` |
 | `PATCH` | `/clients/:id` | Update client details | Permission: `clients.update` |
 | `DELETE`| `/clients/:id` | Soft delete client record | Permission: `clients.delete` |
+| `GET` | `/clients/:id/communications` | List client communication history | Permission: `clients.read` |
+| `POST` | `/clients/:id/communications` | Add new communication log | Permission: `clients.update` |
 
 ---
 
@@ -57,6 +59,10 @@
 | `GET` | `/projects/:id` | Project details, tasks summary & file links | Permission: `projects.read` |
 | `PATCH` | `/projects/:id` | Update project progress, dates, budget or status | Permission: `projects.update` |
 | `DELETE`| `/projects/:id` | Soft delete project | Permission: `projects.delete` |
+| `GET` | `/projects/:id/milestones` | List project milestones | Permission: `projects.read` |
+| `POST` | `/projects/:id/milestones` | Create project milestone | Permission: `projects.update` |
+| `PATCH` | `/projects/:id/milestones/:milestoneId` | Update milestone status/details | Permission: `projects.update` |
+| `DELETE`| `/projects/:id/milestones/:milestoneId` | Delete project milestone | Permission: `projects.update` |
 
 ---
 
@@ -71,6 +77,9 @@
 | `DELETE`| `/tasks/:id` | Soft delete task | Permission: `tasks.delete` |
 | `POST` | `/tasks/:id/comments` | Post comment on a task | Logged-in User |
 | `POST` | `/tasks/:id/attachments` | Upload file to Cloudinary & link to task | Logged-in User |
+| `POST` | `/tasks/:id/subtasks` | Create a subtask | Permission: `tasks.update` |
+| `PATCH` | `/tasks/:id/subtasks/:subtaskId` | Toggle subtask completion | Permission: `tasks.update` |
+| `GET` | `/tasks/:id/activities` | List task activity log | Permission: `tasks.read` |
 
 ---
 
@@ -79,14 +88,37 @@
 | Method | Endpoint | Description | Access Level |
 | :--- | :--- | :--- | :--- |
 | `GET` | `/invoices` | List invoices (Filter by client, status, date) | Permission: `invoices.read` |
-| `POST` | `/invoices` | Create invoice with line items & dynamic tax | Permission: `invoices.create` |
+| `POST` | `/invoices` | Create invoice with line items (including individual tax) | Permission: `invoices.create` |
 | `GET` | `/invoices/:id` | Get invoice breakdown | Permission: `invoices.read` |
 | `PATCH` | `/invoices/:id/status` | Update invoice status (e.g., PAID, OVERDUE) | Permission: `invoices.update` |
 | `GET` | `/invoices/:id/download` | Download invoice PDF | Permission: `invoices.read` |
+| `POST` | `/invoices/:id/reminders` | Send payment reminder email | Permission: `invoices.read` |
 
 ---
 
-## 8. Settings & Dashboard (`/api/v1/settings`, `/api/v1/dashboard`)
+## 8. Team Management (`/api/v1/team`)
+
+| Method | Endpoint | Description | Access Level |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/team` | List team members with pagination and filters (role, department) | Permission: `team.read` |
+| `POST` | `/team` | Invite/add a new team member | Permission: `team.create` |
+| `GET` | `/team/:id` | Get team member profile, tasks, and projects | Permission: `team.read` |
+| `GET` | `/team/analytics` | Get team productivity metrics, skills assessment, and top performers | Permission: `team.read` |
+
+---
+
+## 9. Reports & Analytics (`/api/v1/reports`)
+
+| Method | Endpoint | Description | Access Level |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/reports/sales` | Generate sales report & revenue analytics | Permission: `reports.read` |
+| `GET` | `/reports/clients` | Client growth metrics | Permission: `reports.read` |
+| `GET` | `/reports/tasks` | Task completion rates | Permission: `reports.read` |
+| `GET` | `/reports/export` | Export specified report data (CSV/Excel) | Permission: `reports.export` |
+
+---
+
+## 10. Settings & Dashboard (`/api/v1/settings`, `/api/v1/dashboard`)
 
 | Method | Endpoint | Description | Access Level |
 | :--- | :--- | :--- | :--- |
@@ -94,3 +126,13 @@
 | `GET` | `/dashboard/analytics` | Sales & team activity charts data | Permission: `dashboard.read` |
 | `GET` | `/settings` | Fetch system settings (e.g., tax percentage) | Logged-in User |
 | `PATCH` | `/settings` | Update system-wide configuration settings | Super Admin |
+| `GET` | `/settings/profile` | Get current user's profile settings | Logged-in User |
+| `PATCH` | `/settings/profile` | Update profile information & picture | Logged-in User |
+| `PATCH` | `/settings/profile/password` | Change user password | Logged-in User |
+| `GET` | `/settings/company` | Get company profile details | Logged-in User |
+| `PATCH` | `/settings/company` | Update company information | Super Admin |
+| `GET` | `/settings/notifications` | Get user notification preferences | Logged-in User |
+| `PATCH` | `/settings/notifications` | Update notification preferences | Logged-in User |
+| `GET` | `/settings/billing` | Get subscription, usage, and billing info | Super Admin |
+| `PATCH` | `/settings/billing/payment-method` | Update default payment method | Super Admin |
+| `GET` | `/settings/billing/history` | List payment history / invoices | Super Admin |
