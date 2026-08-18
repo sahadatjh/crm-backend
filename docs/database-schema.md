@@ -193,7 +193,9 @@
 - `user_id`: UUID (FK -> `users.id`, Not Null)
 - `title`: VARCHAR(255) (Not Null)
 - `message`: TEXT (Not Null)
-- `type`: ENUM ('INFO', 'WARNING', 'SUCCESS', 'ALERT')
+- `event_type`: VARCHAR(100) (e.g., 'task_assigned', 'mention', 'invoice_paid', 'task_due_soon')
+- `link_id`: UUID (Nullable, ID of the related resource)
+- `link_type`: ENUM ('TASK', 'INVOICE', 'PROJECT', 'CLIENT') (Nullable)
 - `is_read`: BOOLEAN (Default: false)
 - Timestamps
 

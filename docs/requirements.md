@@ -77,7 +77,10 @@
 ---
 
 ## 9. Notifications Module
-- **In-app Notifications:** Real-time bell notification for task assignments, mentions, status updates, and invoice alerts.
+- **In-app Notifications:** Real-time bell notification panel with:
+  - Unread indicators (dots) and "Mark all read" action.
+  - Filtering tabs: All, Unread, and Mentions.
+  - Event coverage: Task assignments, Mentions, Invoice payments/overdues, Task due soon, New client added, and Task completions.
 - **Email Notifications:** Automated transactional emails for password resets, client invoices, and urgent alerts.
 
 ---

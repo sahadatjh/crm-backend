@@ -118,7 +118,17 @@
 
 ---
 
-## 10. Settings & Dashboard (`/api/v1/settings`, `/api/v1/dashboard`)
+## 10. Notifications (`/api/v1/notifications`)
+
+| Method | Endpoint | Description | Access Level |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/notifications` | List notifications (Filter by unread, mentions) | Logged-in User |
+| `PATCH` | `/notifications/:id/read` | Mark a specific notification as read | Logged-in User |
+| `POST` | `/notifications/mark-all-read` | Mark all notifications as read | Logged-in User |
+
+---
+
+## 11. Settings & Dashboard (`/api/v1/settings`, `/api/v1/dashboard`)
 
 | Method | Endpoint | Description | Access Level |
 | :--- | :--- | :--- | :--- |
