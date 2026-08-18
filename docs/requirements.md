@@ -92,4 +92,7 @@
   - Manage Payment Methods and Billing Information.
   - View Payment History and download past invoices.
   - Subscription management (Upgrade, Change, Cancel).
-- **Integrations:** Third-party app connections.
+- **Integrations:** 
+  - API Access management (generate, reveal, and revoke API keys).
+  - Webhooks management (register endpoints for events like `task.created`, `project.updated`).
+  - Third-party app connections (Slack, Google Calendar, GitHub, Stripe, Zapier, Dropbox, Zoom, Mailchimp) with Connect/Disconnect and Configure workflows.

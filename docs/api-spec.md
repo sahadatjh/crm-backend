@@ -136,3 +136,13 @@
 | `GET` | `/settings/billing` | Get subscription, usage, and billing info | Super Admin |
 | `PATCH` | `/settings/billing/payment-method` | Update default payment method | Super Admin |
 | `GET` | `/settings/billing/history` | List payment history / invoices | Super Admin |
+| `GET` | `/settings/integrations/api-keys` | List API keys | Super Admin |
+| `POST` | `/settings/integrations/api-keys` | Generate new API key | Super Admin |
+| `DELETE` | `/settings/integrations/api-keys/:id` | Revoke API key | Super Admin |
+| `GET` | `/settings/integrations/webhooks` | List registered webhooks | Super Admin |
+| `POST` | `/settings/integrations/webhooks` | Add a new webhook | Super Admin |
+| `PATCH` | `/settings/integrations/webhooks/:id` | Update webhook URL/events | Super Admin |
+| `DELETE` | `/settings/integrations/webhooks/:id` | Delete webhook | Super Admin |
+| `GET` | `/settings/integrations` | List available and connected integrations | Super Admin |
+| `POST` | `/settings/integrations/:provider/connect` | Initiate OAuth/connection for a provider | Super Admin |
+| `POST` | `/settings/integrations/:provider/disconnect` | Disconnect an integration | Super Admin |

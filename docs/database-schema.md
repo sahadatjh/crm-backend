@@ -231,3 +231,29 @@
 - `country`: VARCHAR(100)
 - `tax_id`: VARCHAR(50)
 - Timestamps
+
+### `api_keys`
+- `id`: UUID (PK)
+- `user_id`: UUID (FK -> `users.id`, Nullable - if organization level)
+- `name`: VARCHAR(100) (e.g., 'Zapier Key')
+- `key`: VARCHAR(255) (Hashed or encrypted, Not Null)
+- `last_used_at`: TIMESTAMP
+- `is_active`: BOOLEAN (Default: true)
+- Timestamps
+
+### `webhooks`
+- `id`: UUID (PK)
+- `url`: VARCHAR(500) (Not Null)
+- `events`: VARCHAR[] (e.g., `['task.created', 'project.updated']`)
+- `secret`: VARCHAR(255) (For payload signature)
+- `is_active`: BOOLEAN (Default: true)
+- Timestamps
+
+### `integrations`
+- `id`: UUID (PK)
+- `provider`: VARCHAR(100) (e.g., 'SLACK', 'GOOGLE_CALENDAR', 'GITHUB')
+- `status`: ENUM ('CONNECTED', 'DISCONNECTED')
+- `access_token`: TEXT (Encrypted)
+- `refresh_token`: TEXT (Encrypted)
+- `config`: JSONB (Provider-specific settings)
+- Timestamps
