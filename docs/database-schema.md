@@ -13,6 +13,13 @@
 - `id`: UUID (PK)
 - `email`: VARCHAR(255) (Unique, Not Null)
 - `password`: VARCHAR(255) (Nullable for Google OAuth users)
+- `google_id`: VARCHAR(255) (Nullable, Unique)
+- `is_active`: BOOLEAN (Default: true)
+- Timestamps & Soft Delete
+
+### `user_profiles`
+- `id`: UUID (PK)
+- `user_id`: UUID (FK -> `users.id`, Unique)
 - `first_name`: VARCHAR(100) (Not Null)
 - `last_name`: VARCHAR(100)
 - `phone`: VARCHAR(50)
@@ -23,10 +30,11 @@
 - `timezone`: VARCHAR(100)
 - `start_date`: DATE
 - `avatar_url`: VARCHAR(500) (Cloudinary URL)
-- `google_id`: VARCHAR(255) (Nullable, Unique)
-- `is_active`: BOOLEAN (Default: true)
-- `role_id`: UUID (FK -> `roles.id`, Nullable)
-- Timestamps & Soft Delete
+- Timestamps
+
+### `user_roles` (Pivot)
+- `user_id`: UUID (FK -> `users.id`, PK)
+- `role_id`: UUID (FK -> `roles.id`, PK)
 
 ### `roles`
 - `id`: UUID (PK)

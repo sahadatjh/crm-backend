@@ -7,7 +7,9 @@
   - Password reset via secure email token.
   - JWT token-based authentication (Access Token & Refresh Token).
   - Session management and multi-device login control.
+  - **User Profile Separation:** Core auth data is separated from extended user profile data.
 - **Dynamic RBAC (Role-Based Access Control):**
+  - **Multiple Roles:** Users can have multiple roles simultaneously, accumulating permissions.
   - **Super Admin:** Can create, edit, and delete Roles & Permissions dynamically; assign roles to users.
   - **Admin:** Can edit existing roles and assign/reassign permissions to roles and users.
   - Granular CRUD permissions per module (View, Create, Edit, Delete).

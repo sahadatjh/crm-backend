@@ -1,14 +1,16 @@
 import {
   Column,
   Entity,
-  ManyToOne,
-  JoinColumn,
+  ManyToMany,
+  JoinTable,
+  OneToOne,
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
   DeleteDateColumn,
 } from 'typeorm';
 import { Role } from '../../roles/entities/role.entity';
+import { UserProfile } from './user-profile.entity';
 
 @Entity('users')
 export class User {
@@ -21,45 +23,25 @@ export class User {
   @Column({ nullable: true, select: false })
   password: string;
 
-  @Column({ name: 'first_name', length: 100 })
-  firstName: string;
-
-  @Column({ name: 'last_name', length: 100, nullable: true })
-  lastName: string;
-
-  @Column({ length: 50, nullable: true })
-  phone: string;
-
-  @Column({ length: 100, nullable: true })
-  department: string;
-
-  @Column({ name: 'job_title', length: 100, nullable: true })
-  jobTitle: string;
-
-  @Column({ type: 'text', nullable: true })
-  bio: string;
-
-  @Column({ length: 255, nullable: true })
-  location: string;
-
-  @Column({ length: 100, nullable: true })
-  timezone: string;
-
-  @Column({ name: 'start_date', type: 'date', nullable: true })
-  startDate: Date;
-
-  @Column({ name: 'avatar_url', length: 500, nullable: true })
-  avatarUrl: string;
-
   @Column({ name: 'google_id', length: 255, nullable: true, unique: true })
   googleId: string;
 
   @Column({ name: 'is_active', default: true })
   isActive: boolean;
 
-  @ManyToOne(() => Role, { nullable: true, eager: true })
-  @JoinColumn({ name: 'role_id' })
-  role: Role;
+  @OneToOne(() => UserProfile, (profile) => profile.user, {
+    cascade: true,
+    eager: true,
+  })
+  profile: UserProfile;
+
+  @ManyToMany(() => Role, { eager: true })
+  @JoinTable({
+    name: 'user_roles',
+    joinColumn: { name: 'user_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'role_id', referencedColumnName: 'id' },
+  })
+  roles: Role[];
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

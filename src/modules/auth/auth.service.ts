@@ -31,9 +31,15 @@ export class AuthService {
     }
 
     const hashedPassword = await bcrypt.hash(registerDto.password, 12);
+    
+    // TypeORM with cascade: true will save the profile automatically
     const user = this.userRepository.create({
-      ...registerDto,
+      email: registerDto.email,
       password: hashedPassword,
+      profile: {
+        firstName: registerDto.firstName,
+        lastName: registerDto.lastName,
+      },
     });
 
     await this.userRepository.save(user);
@@ -49,12 +55,15 @@ export class AuthService {
         id: true,
         email: true,
         password: true,
-        firstName: true,
-        lastName: true,
-        avatarUrl: true,
         isActive: true,
+        profile: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          avatarUrl: true,
+        },
       },
-      relations: { role: { permissions: true } },
+      relations: { roles: { permissions: true }, profile: true },
     });
 
     if (!user || !user.password) {

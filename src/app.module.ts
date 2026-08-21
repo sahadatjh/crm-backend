@@ -9,8 +9,10 @@ import { AppService } from './app.service';
 import { AuthModule } from './modules/auth/auth.module';
 import { RolesModule } from './modules/roles/roles.module';
 import { ClientsModule } from './modules/clients/clients.module';
+import { SharedModule } from './shared/shared.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { PermissionsGuard } from './common/guards/permissions.guard';
+import { SeederModule } from './database/seeders/seeder.module';
 
 @Module({
   imports: [
@@ -26,10 +28,11 @@ import { PermissionsGuard } from './common/guards/permissions.guard';
       useFactory: (config: ConfigService) =>
         config.get('database') as object,
     }),
-
+    SharedModule,
     AuthModule,
     RolesModule,
     ClientsModule,
+    SeederModule,
   ],
   controllers: [AppController],
   providers: [
@@ -38,4 +41,4 @@ import { PermissionsGuard } from './common/guards/permissions.guard';
     { provide: APP_GUARD, useClass: PermissionsGuard },
   ],
 })
-export class AppModule {}
+export class AppModule { }

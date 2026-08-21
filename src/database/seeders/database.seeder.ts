@@ -1,0 +1,167 @@
+import { Injectable, OnApplicationBootstrap, Logger } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import * as bcrypt from 'bcrypt';
+import { Role } from '../../modules/roles/entities/role.entity';
+import { Permission } from '../../modules/roles/entities/permission.entity';
+import { User } from '../../modules/users/entities/user.entity';
+import { SystemRoles } from '../../shared/enums/system-roles.enum';
+
+// All system permissions — add new ones here as modules grow
+const SYSTEM_PERMISSIONS: { slug: string; module: string; description: string }[] = [
+  // Clients
+  { slug: 'clients.read', module: 'clients', description: 'View clients' },
+  { slug: 'clients.create', module: 'clients', description: 'Create clients' },
+  { slug: 'clients.update', module: 'clients', description: 'Update clients' },
+  { slug: 'clients.delete', module: 'clients', description: 'Delete clients' },
+  // Projects
+  { slug: 'projects.read', module: 'projects', description: 'View projects' },
+  { slug: 'projects.create', module: 'projects', description: 'Create projects' },
+  { slug: 'projects.update', module: 'projects', description: 'Update projects' },
+  { slug: 'projects.delete', module: 'projects', description: 'Delete projects' },
+  // Tasks
+  { slug: 'tasks.read', module: 'tasks', description: 'View tasks' },
+  { slug: 'tasks.create', module: 'tasks', description: 'Create tasks' },
+  { slug: 'tasks.update', module: 'tasks', description: 'Update tasks' },
+  { slug: 'tasks.delete', module: 'tasks', description: 'Delete tasks' },
+  // Invoices
+  { slug: 'invoices.read', module: 'invoices', description: 'View invoices' },
+  { slug: 'invoices.create', module: 'invoices', description: 'Create invoices' },
+  { slug: 'invoices.update', module: 'invoices', description: 'Update invoices' },
+  { slug: 'invoices.delete', module: 'invoices', description: 'Delete invoices' },
+  // Team
+  { slug: 'team.read', module: 'team', description: 'View team members' },
+  { slug: 'team.create', module: 'team', description: 'Add team members' },
+  // Reports
+  { slug: 'reports.read', module: 'reports', description: 'View reports' },
+  { slug: 'reports.export', module: 'reports', description: 'Export reports' },
+  // Dashboard
+  { slug: 'dashboard.read', module: 'dashboard', description: 'View dashboard' },
+  // Roles
+  { slug: 'roles.read', module: 'roles', description: 'View roles' },
+  { slug: 'roles.create', module: 'roles', description: 'Create roles' },
+  { slug: 'roles.update', module: 'roles', description: 'Update roles' },
+  { slug: 'roles.delete', module: 'roles', description: 'Delete roles' },
+];
+
+@Injectable()
+export class DatabaseSeederService implements OnApplicationBootstrap {
+  private readonly logger = new Logger(DatabaseSeederService.name);
+
+  constructor(
+    @InjectRepository(Role)
+    private readonly roleRepository: Repository<Role>,
+    @InjectRepository(Permission)
+    private readonly permissionRepository: Repository<Permission>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+  ) {}
+
+  // Runs automatically on app startup — seeds permissions, roles, and default super admin
+  async onApplicationBootstrap() {
+    this.logger.log('Running database seeders...');
+    await this.seedPermissions();
+    await this.seedDefaultRoles();
+    await this.seedSuperAdmin();
+    this.logger.log('Database seeding completed.');
+  }
+
+  private async seedPermissions() {
+    for (const perm of SYSTEM_PERMISSIONS) {
+      const exists = await this.permissionRepository.findOne({
+        where: { slug: perm.slug },
+      });
+      if (!exists) {
+        await this.permissionRepository.save(
+          this.permissionRepository.create(perm),
+        );
+      }
+    }
+  }
+
+  private async seedDefaultRoles() {
+    const allPermissions = await this.permissionRepository.find();
+
+    const defaults = [
+      {
+        name: SystemRoles.SUPER_ADMIN,
+        description: 'Full system access',
+        isSystem: true,
+        permissions: allPermissions,
+      },
+      {
+        name: SystemRoles.ADMIN,
+        description: 'Can manage projects, clients, tasks and team',
+        isSystem: true,
+        permissions: allPermissions.filter((p) =>
+          ['clients', 'projects', 'tasks', 'invoices', 'team', 'dashboard', 'reports'].includes(p.module),
+        ),
+      },
+      {
+        name: SystemRoles.MANAGER,
+        description: 'Can manage projects and teams',
+        isSystem: true,
+        permissions: allPermissions.filter((p) =>
+          ['projects', 'tasks', 'team', 'dashboard'].includes(p.module),
+        ),
+      },
+      {
+        name: SystemRoles.STAFF,
+        description: 'Can view and edit assigned tasks',
+        isSystem: true,
+        permissions: allPermissions.filter((p) =>
+          ['tasks', 'dashboard'].includes(p.module),
+        ),
+      },
+    ];
+
+    for (const def of defaults) {
+      const exists = await this.roleRepository.findOne({
+        where: { name: def.name },
+      });
+      if (!exists) {
+        await this.roleRepository.save(this.roleRepository.create(def));
+      }
+    }
+  }
+
+  private async seedSuperAdmin() {
+    const email = process.env.SUPER_ADMIN_EMAIL;
+    const password = process.env.SUPER_ADMIN_PASSWORD;
+
+    // Throw error if env variables are missing
+    if (!email || !password) {
+      this.logger.error('SUPER_ADMIN_EMAIL and SUPER_ADMIN_PASSWORD environment variables are required for seeding!');
+      throw new Error('Missing Super Admin credentials in environment variables.');
+    }
+
+    const exists = await this.userRepository.findOne({ where: { email } });
+    if (exists) {
+      return; // Already seeded — skip safely
+    }
+
+    const superAdminRole = await this.roleRepository.findOne({
+      where: { name: SystemRoles.SUPER_ADMIN },
+    });
+    if (!superAdminRole) {
+      throw new Error('Super Admin role not found. Seeding failed.');
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 12);
+
+    // Profile will be saved automatically due to cascade: true on User -> UserProfile
+    const admin = this.userRepository.create({
+      email,
+      password: hashedPassword,
+      isActive: true,
+      roles: [superAdminRole],
+      profile: {
+        firstName: process.env.SUPER_ADMIN_FIRST_NAME ?? 'Super',
+        lastName: process.env.SUPER_ADMIN_LAST_NAME ?? 'Admin',
+      },
+    });
+
+    await this.userRepository.save(admin);
+    this.logger.log(`Super Admin seeded successfully: ${email}`);
+  }
+}

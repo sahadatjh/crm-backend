@@ -23,16 +23,21 @@ export class PermissionsGuard implements CanActivate {
 
     const { user } = context.switchToHttp().getRequest();
 
-    if (!user || !user.role) {
-      throw new ForbiddenException('Access denied. No role assigned.');
+    if (!user || !user.roles || user.roles.length === 0) {
+      throw new ForbiddenException('Access denied. No roles assigned.');
     }
 
-    const userPermissionSlugs: string[] = (user.role?.permissions ?? []).map(
-      (p: { slug: string }) => p.slug,
-    );
+    const userPermissionSlugs = new Set<string>();
+    for (const role of user.roles) {
+      if (role.permissions) {
+        for (const p of role.permissions) {
+          userPermissionSlugs.add(p.slug);
+        }
+      }
+    }
 
     const hasPermission = requiredPermissions.every((slug) =>
-      userPermissionSlugs.includes(slug),
+      userPermissionSlugs.has(slug),
     );
 
     if (!hasPermission) {
