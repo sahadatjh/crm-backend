@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
@@ -35,6 +36,11 @@ async function bootstrap() {
   // CORS
   app.enableCors();
 
-  await app.listen(process.env.PORT ?? 3000);
+  const configService = app.get(ConfigService);
+  const port = configService.get<number>('app.port') ?? 3000;
+
+  await app.listen(port);
+  console.log(`🚀 Application running on http://localhost:${port}/api/v1`);
+  console.log(`📖 Swagger docs at http://localhost:${port}/api/docs`);
 }
 bootstrap();
