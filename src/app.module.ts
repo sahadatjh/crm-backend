@@ -5,6 +5,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './modules/auth/auth.module';
+import { RolesModule } from './modules/roles/roles.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { PermissionsGuard } from './common/guards/permissions.guard';
 
@@ -18,15 +19,21 @@ import { PermissionsGuard } from './common/guards/permissions.guard';
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
         host: configService.get<string>('DB_HOST'),
-        port: configService.get<number>('DB_PORT'),
+        // ConfigService.get does not coerce — the <number> generic is only a cast,
+        // so DB_PORT arrives as the string '5432'. Parse it explicitly.
+        port: parseInt(configService.get<string>('DB_PORT') ?? '5432', 10),
         username: configService.get<string>('DB_USERNAME'),
-        password: configService.get<string>('DB_PASSWORD'),
+        password: configService.get<string>('DB_PASSWORD') || undefined,
         database: configService.get<string>('DB_DATABASE'),
         autoLoadEntities: true,
         synchronize: configService.get<string>('NODE_ENV') !== 'production',
+        ssl: false,
       }),
       inject: [ConfigService],
     }),
+    // RolesModule registers Role + Permission so autoLoadEntities can resolve
+    // the User -> Role relation. Every entity must be reachable via forFeature().
+    RolesModule,
     AuthModule,
   ],
   controllers: [AppController],
@@ -38,5 +45,5 @@ import { PermissionsGuard } from './common/guards/permissions.guard';
     { provide: APP_GUARD, useClass: PermissionsGuard },
   ],
 })
-export class AppModule {}
+export class AppModule { }
 
