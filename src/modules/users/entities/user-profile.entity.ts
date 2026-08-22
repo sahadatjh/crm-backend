@@ -3,11 +3,13 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
+  ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { User } from './user.entity';
+import { Department } from '../../departments/entities/department.entity';
 
 @Entity('user_profiles')
 export class UserProfile {
@@ -27,8 +29,9 @@ export class UserProfile {
   @Column({ length: 50, nullable: true })
   phone: string;
 
-  @Column({ length: 100, nullable: true })
-  department: string;
+  @ManyToOne(() => Department, { nullable: true, onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'department_id' })
+  department: Department;
 
   @Column({ name: 'job_title', length: 100, nullable: true })
   jobTitle: string;
@@ -41,6 +44,9 @@ export class UserProfile {
 
   @Column({ length: 100, nullable: true })
   timezone: string;
+
+  @Column({ name: 'social_links', type: 'jsonb', nullable: true })
+  socialLinks: Record<string, string>;
 
   @Column({ name: 'start_date', type: 'date', nullable: true })
   startDate: Date;

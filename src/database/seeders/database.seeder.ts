@@ -34,6 +34,11 @@ const SYSTEM_PERMISSIONS: { slug: string; module: string; description: string }[
   // Team
   { slug: PermissionEnum.TEAM_READ, module: 'team', description: 'View team members' },
   { slug: PermissionEnum.TEAM_CREATE, module: 'team', description: 'Add team members' },
+  // Departments
+  { slug: PermissionEnum.DEPARTMENTS_READ, module: 'departments', description: 'View departments' },
+  { slug: PermissionEnum.DEPARTMENTS_CREATE, module: 'departments', description: 'Create departments' },
+  { slug: PermissionEnum.DEPARTMENTS_UPDATE, module: 'departments', description: 'Update departments' },
+  { slug: PermissionEnum.DEPARTMENTS_DELETE, module: 'departments', description: 'Delete departments' },
   // Reports
   { slug: PermissionEnum.REPORTS_READ, module: 'reports', description: 'View reports' },
   { slug: PermissionEnum.REPORTS_EXPORT, module: 'reports', description: 'Export reports' },
@@ -96,7 +101,7 @@ export class DatabaseSeederService implements OnApplicationBootstrap {
         description: 'Can manage projects, clients, tasks and team',
         isSystem: true,
         permissions: allPermissions.filter((p) =>
-          ['clients', 'projects', 'tasks', 'invoices', 'team', 'dashboard', 'reports'].includes(p.module),
+          ['clients', 'projects', 'tasks', 'invoices', 'team', 'dashboard', 'reports', 'departments'].includes(p.module),
         ),
       },
       {

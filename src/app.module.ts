@@ -13,6 +13,9 @@ import { ProjectsModule } from './modules/projects/projects.module';
 import { TasksModule } from './modules/tasks/tasks.module';
 import { AttachmentsModule } from './modules/attachments/attachments.module';
 import { InvoicesModule } from './modules/invoices/invoices.module';
+import { DepartmentsModule } from './modules/departments/departments.module';
+import { UsersModule } from './modules/users/users.module';
+import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { SharedModule } from './shared/shared.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { PermissionsGuard } from './common/guards/permissions.guard';
@@ -40,6 +43,9 @@ import { SeederModule } from './database/seeders/seeder.module';
     TasksModule,
     AttachmentsModule,
     InvoicesModule,
+    DepartmentsModule,
+    UsersModule,
+    AnalyticsModule,
     SeederModule,
   ],
   controllers: [AppController],

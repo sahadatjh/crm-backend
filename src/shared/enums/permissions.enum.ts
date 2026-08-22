@@ -23,9 +23,15 @@ export const Permission = {
   INVOICES_UPDATE: 'invoices.update',
   INVOICES_DELETE: 'invoices.delete',
 
-  // Team
+  // Team / Users
   TEAM_READ: 'team.read',
   TEAM_CREATE: 'team.create',
+
+  // Departments
+  DEPARTMENTS_READ: 'departments.read',
+  DEPARTMENTS_CREATE: 'departments.create',
+  DEPARTMENTS_UPDATE: 'departments.update',
+  DEPARTMENTS_DELETE: 'departments.delete',
 
   // Reports
   REPORTS_READ: 'reports.read',
