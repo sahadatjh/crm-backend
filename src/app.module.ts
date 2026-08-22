@@ -9,6 +9,7 @@ import { AppService } from './app.service';
 import { AuthModule } from './modules/auth/auth.module';
 import { RolesModule } from './modules/roles/roles.module';
 import { ClientsModule } from './modules/clients/clients.module';
+import { ProjectsModule } from './modules/projects/projects.module';
 import { SharedModule } from './shared/shared.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { PermissionsGuard } from './common/guards/permissions.guard';
@@ -32,6 +33,7 @@ import { SeederModule } from './database/seeders/seeder.module';
     AuthModule,
     RolesModule,
     ClientsModule,
+    ProjectsModule,
     SeederModule,
   ],
   controllers: [AppController],
