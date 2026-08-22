@@ -16,6 +16,9 @@ import { InvoicesModule } from './modules/invoices/invoices.module';
 import { DepartmentsModule } from './modules/departments/departments.module';
 import { UsersModule } from './modules/users/users.module';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
+import { SettingsModule } from './modules/settings/settings.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import { SharedModule } from './shared/shared.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { PermissionsGuard } from './common/guards/permissions.guard';
@@ -46,7 +49,10 @@ import { SeederModule } from './database/seeders/seeder.module';
     DepartmentsModule,
     UsersModule,
     AnalyticsModule,
+    SettingsModule,
+    NotificationsModule,
     SeederModule,
+    EventEmitterModule.forRoot(),
   ],
   controllers: [AppController],
   providers: [

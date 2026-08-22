@@ -15,6 +15,8 @@ import { QueryTaskDto } from './dto/query-task.dto';
 import { CreateSubtaskDto } from './dto/create-subtask.dto';
 import { UpdateSubtaskDto } from './dto/update-subtask.dto';
 import { CreateCommentDto } from './dto/create-comment.dto';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { NotificationType, ResourceType } from '../../shared/enums/notification.enum';
 
 @Injectable()
 export class TasksService {
@@ -29,6 +31,7 @@ export class TasksService {
     private readonly projectRepository: Repository<Project>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   async create(dto: CreateTaskDto): Promise<Task> {
@@ -56,7 +59,20 @@ export class TasksService {
       ...(assignee && { assignee }),
     });
 
-    return this.taskRepository.save(task);
+    const savedTask = await this.taskRepository.save(task);
+
+    if (assignee) {
+      this.eventEmitter.emit('notification.send', {
+        userId: assignee.id,
+        title: 'New Task Assigned',
+        message: `You have been assigned to task: "${savedTask.title}" in project "${project.title}"`,
+        type: NotificationType.TASK_ASSIGNED,
+        resourceType: ResourceType.TASK,
+        resourceId: savedTask.id,
+      });
+    }
+
+    return savedTask;
   }
 
   async findAll(query: QueryTaskDto) {

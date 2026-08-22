@@ -40,6 +40,10 @@ export const Permission = {
   // Dashboard
   DASHBOARD_READ: 'dashboard.read',
 
+  // Settings
+  SETTINGS_READ: 'settings.read',
+  SETTINGS_UPDATE: 'settings.update',
+
   // Roles
   ROLES_READ: 'roles.read',
   ROLES_CREATE: 'roles.create',

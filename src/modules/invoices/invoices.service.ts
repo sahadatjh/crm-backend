@@ -11,6 +11,8 @@ import { UpdateInvoiceDto } from './dto/update-invoice.dto';
 import { QueryInvoiceDto } from './dto/query-invoice.dto';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { InvoiceStatus } from '../../shared/enums/invoice.enum';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { NotificationType, ResourceType } from '../../shared/enums/notification.enum';
 
 @Injectable()
 export class InvoicesService {
@@ -24,6 +26,7 @@ export class InvoicesService {
     @InjectRepository(Project)
     private readonly projectRepository: Repository<Project>,
     private readonly dataSource: DataSource,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   private async generateInvoiceNumber(): Promise<string> {
@@ -191,8 +194,18 @@ export class InvoicesService {
     invoice.amountPaid = newAmountPaid;
     invoice.balanceDue = newBalanceDue < 0 ? 0 : newBalanceDue;
 
-    if (invoice.balanceDue === 0) {
+    if (invoice.balanceDue <= 0) {
       invoice.status = InvoiceStatus.PAID;
+
+      // Emit event for invoice paid
+      this.eventEmitter.emit('notification.send', {
+        userId: invoice.client?.user?.id || null, 
+        title: 'Invoice Paid',
+        message: `Invoice ${invoice.invoiceNumber} has been fully paid.`,
+        type: NotificationType.INVOICE_PAID,
+        resourceType: ResourceType.INVOICE,
+        resourceId: invoice.id,
+      });
     } else if (invoice.balanceDue > 0 && newAmountPaid > 0) {
       invoice.status = InvoiceStatus.PARTIALLY_PAID;
     }

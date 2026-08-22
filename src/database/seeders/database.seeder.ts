@@ -44,6 +44,9 @@ const SYSTEM_PERMISSIONS: { slug: string; module: string; description: string }[
   { slug: PermissionEnum.REPORTS_EXPORT, module: 'reports', description: 'Export reports' },
   // Dashboard
   { slug: PermissionEnum.DASHBOARD_READ, module: 'dashboard', description: 'View dashboard' },
+  // Settings
+  { slug: PermissionEnum.SETTINGS_READ, module: 'settings', description: 'View system settings' },
+  { slug: PermissionEnum.SETTINGS_UPDATE, module: 'settings', description: 'Update system settings' },
   // Roles
   { slug: PermissionEnum.ROLES_READ, module: 'roles', description: 'View roles' },
   { slug: PermissionEnum.ROLES_CREATE, module: 'roles', description: 'Create roles' },
