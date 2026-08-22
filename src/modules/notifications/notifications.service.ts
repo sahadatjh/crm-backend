@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Notification } from './entities/notification.entity';
 import { OnEvent } from '@nestjs/event-emitter';
 import { NotificationType, ResourceType } from '../../shared/enums/notification.enum';
+import { NotificationsGateway } from './notifications.gateway';
 
 interface NotificationPayload {
   userId: string;
@@ -19,6 +20,7 @@ export class NotificationsService {
   constructor(
     @InjectRepository(Notification)
     private readonly notificationRepository: Repository<Notification>,
+    private readonly notificationsGateway: NotificationsGateway,
   ) {}
 
   @OnEvent('notification.send')
@@ -35,7 +37,9 @@ export class NotificationsService {
     });
     
     await this.notificationRepository.save(notification);
-    // Future: Here you can also trigger Email/Push Notification using external services
+    
+    // Push real-time notification to user via WebSocket
+    this.notificationsGateway.sendNotificationToUser(payload.userId, notification);
   }
 
   async getUserNotifications(userId: string): Promise<Notification[]> {
