@@ -3,13 +3,15 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { APP_GUARD } from '@nestjs/core';
 
-import { appConfig, databaseConfig, jwtConfig } from './config';
+import { appConfig, databaseConfig, jwtConfig, s3Config } from './config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './modules/auth/auth.module';
 import { RolesModule } from './modules/roles/roles.module';
 import { ClientsModule } from './modules/clients/clients.module';
 import { ProjectsModule } from './modules/projects/projects.module';
+import { TasksModule } from './modules/tasks/tasks.module';
+import { AttachmentsModule } from './modules/attachments/attachments.module';
 import { SharedModule } from './shared/shared.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { PermissionsGuard } from './common/guards/permissions.guard';
@@ -20,7 +22,7 @@ import { SeederModule } from './database/seeders/seeder.module';
     // Load .env and register all config namespaces globally
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [appConfig, databaseConfig, jwtConfig],
+      load: [appConfig, databaseConfig, jwtConfig, s3Config],
     }),
 
     // TypeORM uses the 'database' namespace from databaseConfig
@@ -34,6 +36,8 @@ import { SeederModule } from './database/seeders/seeder.module';
     RolesModule,
     ClientsModule,
     ProjectsModule,
+    TasksModule,
+    AttachmentsModule,
     SeederModule,
   ],
   controllers: [AppController],
