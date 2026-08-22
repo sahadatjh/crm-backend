@@ -22,6 +22,7 @@ import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { AssignRoleDto } from './dto/assign-role.dto';
 import { RequirePermissions } from '../../common/decorators/permissions.decorator';
+import { Permission } from '../../shared/enums/permissions.enum';
 
 @ApiTags('Roles & Permissions')
 @ApiBearerAuth()
@@ -30,7 +31,7 @@ export class RolesController {
   constructor(private readonly rolesService: RolesService) {}
 
   @Get('roles')
-  @RequirePermissions('roles.read')
+  @RequirePermissions(Permission.ROLES_READ)
   @ApiOperation({ summary: 'List all roles with attached permissions' })
   @ApiResponse({ status: 200, description: 'Roles retrieved' })
   findAllRoles() {
@@ -38,7 +39,7 @@ export class RolesController {
   }
 
   @Post('roles')
-  @RequirePermissions('roles.create')
+  @RequirePermissions(Permission.ROLES_CREATE)
   @ApiOperation({ summary: 'Create a new dynamic role' })
   @ApiResponse({ status: 201, description: 'Role created' })
   createRole(@Body() dto: CreateRoleDto) {
@@ -46,7 +47,7 @@ export class RolesController {
   }
 
   @Patch('roles/:id')
-  @RequirePermissions('roles.update')
+  @RequirePermissions(Permission.ROLES_UPDATE)
   @ApiOperation({ summary: 'Update role details or permission assignments' })
   @ApiParam({ name: 'id', type: 'string', format: 'uuid' })
   @ApiResponse({ status: 200, description: 'Role updated' })
@@ -58,7 +59,7 @@ export class RolesController {
   }
 
   @Delete('roles/:id')
-  @RequirePermissions('roles.delete')
+  @RequirePermissions(Permission.ROLES_DELETE)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Soft delete role (system roles cannot be deleted)' })
   @ApiParam({ name: 'id', type: 'string', format: 'uuid' })
@@ -68,7 +69,7 @@ export class RolesController {
   }
 
   @Get('permissions')
-  @RequirePermissions('roles.read')
+  @RequirePermissions(Permission.ROLES_READ)
   @ApiOperation({ summary: 'List all available system permissions' })
   @ApiResponse({ status: 200, description: 'Permissions retrieved' })
   findAllPermissions() {
@@ -76,7 +77,7 @@ export class RolesController {
   }
 
   @Post('roles/assign-user')
-  @RequirePermissions('roles.update')
+  @RequirePermissions(Permission.ROLES_UPDATE)
   @ApiOperation({ summary: 'Assign or change role for a specific user' })
   @ApiResponse({ status: 201, description: 'Role assigned to user' })
   assignRole(@Body() dto: AssignRoleDto) {

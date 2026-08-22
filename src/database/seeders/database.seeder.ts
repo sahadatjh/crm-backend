@@ -7,41 +7,43 @@ import { Permission } from '../../modules/roles/entities/permission.entity';
 import { User } from '../../modules/users/entities/user.entity';
 import { SystemRoles } from '../../shared/enums/system-roles.enum';
 
-// All system permissions — add new ones here as modules grow
+import { Permission as PermissionEnum } from '../../shared/enums/permissions.enum';
+
+// All system permissions — driven by the central enum
 const SYSTEM_PERMISSIONS: { slug: string; module: string; description: string }[] = [
   // Clients
-  { slug: 'clients.read', module: 'clients', description: 'View clients' },
-  { slug: 'clients.create', module: 'clients', description: 'Create clients' },
-  { slug: 'clients.update', module: 'clients', description: 'Update clients' },
-  { slug: 'clients.delete', module: 'clients', description: 'Delete clients' },
+  { slug: PermissionEnum.CLIENTS_READ, module: 'clients', description: 'View clients' },
+  { slug: PermissionEnum.CLIENTS_CREATE, module: 'clients', description: 'Create clients' },
+  { slug: PermissionEnum.CLIENTS_UPDATE, module: 'clients', description: 'Update clients' },
+  { slug: PermissionEnum.CLIENTS_DELETE, module: 'clients', description: 'Delete clients' },
   // Projects
-  { slug: 'projects.read', module: 'projects', description: 'View projects' },
-  { slug: 'projects.create', module: 'projects', description: 'Create projects' },
-  { slug: 'projects.update', module: 'projects', description: 'Update projects' },
-  { slug: 'projects.delete', module: 'projects', description: 'Delete projects' },
+  { slug: PermissionEnum.PROJECTS_READ, module: 'projects', description: 'View projects' },
+  { slug: PermissionEnum.PROJECTS_CREATE, module: 'projects', description: 'Create projects' },
+  { slug: PermissionEnum.PROJECTS_UPDATE, module: 'projects', description: 'Update projects' },
+  { slug: PermissionEnum.PROJECTS_DELETE, module: 'projects', description: 'Delete projects' },
   // Tasks
-  { slug: 'tasks.read', module: 'tasks', description: 'View tasks' },
-  { slug: 'tasks.create', module: 'tasks', description: 'Create tasks' },
-  { slug: 'tasks.update', module: 'tasks', description: 'Update tasks' },
-  { slug: 'tasks.delete', module: 'tasks', description: 'Delete tasks' },
+  { slug: PermissionEnum.TASKS_READ, module: 'tasks', description: 'View tasks' },
+  { slug: PermissionEnum.TASKS_CREATE, module: 'tasks', description: 'Create tasks' },
+  { slug: PermissionEnum.TASKS_UPDATE, module: 'tasks', description: 'Update tasks' },
+  { slug: PermissionEnum.TASKS_DELETE, module: 'tasks', description: 'Delete tasks' },
   // Invoices
-  { slug: 'invoices.read', module: 'invoices', description: 'View invoices' },
-  { slug: 'invoices.create', module: 'invoices', description: 'Create invoices' },
-  { slug: 'invoices.update', module: 'invoices', description: 'Update invoices' },
-  { slug: 'invoices.delete', module: 'invoices', description: 'Delete invoices' },
+  { slug: PermissionEnum.INVOICES_READ, module: 'invoices', description: 'View invoices' },
+  { slug: PermissionEnum.INVOICES_CREATE, module: 'invoices', description: 'Create invoices' },
+  { slug: PermissionEnum.INVOICES_UPDATE, module: 'invoices', description: 'Update invoices' },
+  { slug: PermissionEnum.INVOICES_DELETE, module: 'invoices', description: 'Delete invoices' },
   // Team
-  { slug: 'team.read', module: 'team', description: 'View team members' },
-  { slug: 'team.create', module: 'team', description: 'Add team members' },
+  { slug: PermissionEnum.TEAM_READ, module: 'team', description: 'View team members' },
+  { slug: PermissionEnum.TEAM_CREATE, module: 'team', description: 'Add team members' },
   // Reports
-  { slug: 'reports.read', module: 'reports', description: 'View reports' },
-  { slug: 'reports.export', module: 'reports', description: 'Export reports' },
+  { slug: PermissionEnum.REPORTS_READ, module: 'reports', description: 'View reports' },
+  { slug: PermissionEnum.REPORTS_EXPORT, module: 'reports', description: 'Export reports' },
   // Dashboard
-  { slug: 'dashboard.read', module: 'dashboard', description: 'View dashboard' },
+  { slug: PermissionEnum.DASHBOARD_READ, module: 'dashboard', description: 'View dashboard' },
   // Roles
-  { slug: 'roles.read', module: 'roles', description: 'View roles' },
-  { slug: 'roles.create', module: 'roles', description: 'Create roles' },
-  { slug: 'roles.update', module: 'roles', description: 'Update roles' },
-  { slug: 'roles.delete', module: 'roles', description: 'Delete roles' },
+  { slug: PermissionEnum.ROLES_READ, module: 'roles', description: 'View roles' },
+  { slug: PermissionEnum.ROLES_CREATE, module: 'roles', description: 'Create roles' },
+  { slug: PermissionEnum.ROLES_UPDATE, module: 'roles', description: 'Update roles' },
+  { slug: PermissionEnum.ROLES_DELETE, module: 'roles', description: 'Delete roles' },
 ];
 
 @Injectable()

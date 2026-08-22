@@ -79,3 +79,7 @@ Type Safety: Strict TypeScript usage. Never use any unless strictly justified.
 Security: Use password hashing (bcrypt), sanitize user inputs, and protect routes using Guards (JwtAuthGuard, RolesGuard).
 
 Pagination: All listing/collection endpoints must support pagination (page, limit), sorting, and filtering.
+
+Enterprise Standards (No Magic Strings): Never use hardcoded strings for permissions, roles, status, or configuration keys. Always extract them to shared enums or constants (e.g., `src/shared/enums/permissions.enum.ts`).
+
+DRY Principle: Follow strict DRY (Don't Repeat Yourself) principles. Centralize repeated logic, constants, and types.

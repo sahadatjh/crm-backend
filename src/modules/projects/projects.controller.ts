@@ -22,6 +22,7 @@ import { QueryProjectDto } from './dto/query-project.dto';
 import { CreateMilestoneDto } from './dto/create-milestone.dto';
 import { UpdateMilestoneDto } from './dto/update-milestone.dto';
 import { RequirePermissions } from '../../common/decorators/permissions.decorator';
+import { Permission } from '../../shared/enums/permissions.enum';
 
 @ApiTags('Projects')
 @ApiBearerAuth()
@@ -32,7 +33,7 @@ export class ProjectsController {
   // ──────────────── Projects CRUD ────────────────
 
   @Post()
-  @RequirePermissions('projects.create')
+  @RequirePermissions(Permission.PROJECTS_CREATE)
   @ApiOperation({ summary: 'Create a new project' })
   @ApiResponse({ status: 201, description: 'Project created successfully.' })
   create(@Body() dto: CreateProjectDto) {
@@ -40,7 +41,7 @@ export class ProjectsController {
   }
 
   @Get()
-  @RequirePermissions('projects.read')
+  @RequirePermissions(Permission.PROJECTS_READ)
   @ApiOperation({ summary: 'List all projects with filters and pagination' })
   @ApiResponse({ status: 200, description: 'Projects retrieved successfully.' })
   findAll(@Query() query: QueryProjectDto) {
@@ -48,7 +49,7 @@ export class ProjectsController {
   }
 
   @Get(':id')
-  @RequirePermissions('projects.read')
+  @RequirePermissions(Permission.PROJECTS_READ)
   @ApiOperation({ summary: 'Get project details including milestones and members' })
   @ApiResponse({ status: 200, description: 'Project retrieved successfully.' })
   @ApiResponse({ status: 404, description: 'Project not found.' })
@@ -57,7 +58,7 @@ export class ProjectsController {
   }
 
   @Patch(':id')
-  @RequirePermissions('projects.update')
+  @RequirePermissions(Permission.PROJECTS_UPDATE)
   @ApiOperation({ summary: 'Update project details, status, budget, or team members' })
   @ApiResponse({ status: 200, description: 'Project updated successfully.' })
   @ApiResponse({ status: 404, description: 'Project not found.' })
@@ -69,7 +70,7 @@ export class ProjectsController {
   }
 
   @Delete(':id')
-  @RequirePermissions('projects.delete')
+  @RequirePermissions(Permission.PROJECTS_DELETE)
   @ApiOperation({ summary: 'Soft delete (archive) a project' })
   @ApiResponse({ status: 200, description: 'Project archived successfully.' })
   @ApiResponse({ status: 404, description: 'Project not found.' })
@@ -80,7 +81,7 @@ export class ProjectsController {
   // ──────────────── Milestones ────────────────
 
   @Get(':id/milestones')
-  @RequirePermissions('projects.read')
+  @RequirePermissions(Permission.PROJECTS_READ)
   @ApiOperation({ summary: 'List all milestones for a project' })
   @ApiResponse({ status: 200, description: 'Milestones retrieved successfully.' })
   getMilestones(@Param('id', ParseUUIDPipe) id: string) {
@@ -88,7 +89,7 @@ export class ProjectsController {
   }
 
   @Post(':id/milestones')
-  @RequirePermissions('projects.update')
+  @RequirePermissions(Permission.PROJECTS_UPDATE)
   @ApiOperation({ summary: 'Create a new milestone for a project' })
   @ApiResponse({ status: 201, description: 'Milestone created successfully.' })
   createMilestone(
@@ -99,7 +100,7 @@ export class ProjectsController {
   }
 
   @Patch(':id/milestones/:milestoneId')
-  @RequirePermissions('projects.update')
+  @RequirePermissions(Permission.PROJECTS_UPDATE)
   @ApiOperation({ summary: 'Update a milestone status or details' })
   @ApiResponse({ status: 200, description: 'Milestone updated successfully.' })
   @ApiResponse({ status: 404, description: 'Milestone not found.' })
@@ -112,7 +113,7 @@ export class ProjectsController {
   }
 
   @Delete(':id/milestones/:milestoneId')
-  @RequirePermissions('projects.update')
+  @RequirePermissions(Permission.PROJECTS_UPDATE)
   @ApiOperation({ summary: 'Delete a project milestone' })
   @ApiResponse({ status: 200, description: 'Milestone deleted successfully.' })
   @ApiResponse({ status: 404, description: 'Milestone not found.' })

@@ -24,6 +24,7 @@ import { UpdateClientDto } from './dto/update-client.dto';
 import { CreateCommunicationDto } from './dto/create-communication.dto';
 import { QueryClientDto } from './dto/query-client.dto';
 import { RequirePermissions } from '../../common/decorators/permissions.decorator';
+import { Permission } from '../../shared/enums/permissions.enum';
 
 @ApiTags('Clients')
 @ApiBearerAuth()
@@ -32,7 +33,7 @@ export class ClientsController {
   constructor(private readonly clientsService: ClientsService) {}
 
   @Post()
-  @RequirePermissions('clients.create')
+  @RequirePermissions(Permission.CLIENTS_CREATE)
   @ApiOperation({ summary: 'Create a new client profile' })
   @ApiResponse({ status: 201, description: 'Client created successfully' })
   create(@Body() createClientDto: CreateClientDto) {
@@ -40,7 +41,7 @@ export class ClientsController {
   }
 
   @Get()
-  @RequirePermissions('clients.read')
+  @RequirePermissions(Permission.CLIENTS_READ)
   @ApiOperation({ summary: 'List all clients with pagination, search & filter' })
   @ApiResponse({ status: 200, description: 'Clients retrieved successfully' })
   findAll(@Query() query: QueryClientDto) {
@@ -48,7 +49,7 @@ export class ClientsController {
   }
 
   @Get(':id')
-  @RequirePermissions('clients.read')
+  @RequirePermissions(Permission.CLIENTS_READ)
   @ApiOperation({ summary: 'Get a single client profile with linked projects' })
   @ApiParam({ name: 'id', type: 'string', format: 'uuid' })
   @ApiResponse({ status: 200, description: 'Client retrieved' })
@@ -58,7 +59,7 @@ export class ClientsController {
   }
 
   @Patch(':id')
-  @RequirePermissions('clients.update')
+  @RequirePermissions(Permission.CLIENTS_UPDATE)
   @ApiOperation({ summary: 'Update client details' })
   @ApiParam({ name: 'id', type: 'string', format: 'uuid' })
   @ApiResponse({ status: 200, description: 'Client updated successfully' })
@@ -70,7 +71,7 @@ export class ClientsController {
   }
 
   @Delete(':id')
-  @RequirePermissions('clients.delete')
+  @RequirePermissions(Permission.CLIENTS_DELETE)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Soft delete (archive) a client record' })
   @ApiParam({ name: 'id', type: 'string', format: 'uuid' })
@@ -80,7 +81,7 @@ export class ClientsController {
   }
 
   @Get(':id/communications')
-  @RequirePermissions('clients.read')
+  @RequirePermissions(Permission.CLIENTS_READ)
   @ApiOperation({ summary: 'List client communication history' })
   @ApiParam({ name: 'id', type: 'string', format: 'uuid' })
   @ApiResponse({ status: 200, description: 'Communication history retrieved' })
@@ -89,7 +90,7 @@ export class ClientsController {
   }
 
   @Post(':id/communications')
-  @RequirePermissions('clients.update')
+  @RequirePermissions(Permission.CLIENTS_UPDATE)
   @ApiOperation({ summary: 'Add a new communication log for a client' })
   @ApiParam({ name: 'id', type: 'string', format: 'uuid' })
   @ApiResponse({ status: 201, description: 'Communication log added' })
