@@ -12,6 +12,7 @@ import { ClientsModule } from './modules/clients/clients.module';
 import { ProjectsModule } from './modules/projects/projects.module';
 import { TasksModule } from './modules/tasks/tasks.module';
 import { AttachmentsModule } from './modules/attachments/attachments.module';
+import { InvoicesModule } from './modules/invoices/invoices.module';
 import { SharedModule } from './shared/shared.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { PermissionsGuard } from './common/guards/permissions.guard';
@@ -38,6 +39,7 @@ import { SeederModule } from './database/seeders/seeder.module';
     ProjectsModule,
     TasksModule,
     AttachmentsModule,
+    InvoicesModule,
     SeederModule,
   ],
   controllers: [AppController],
