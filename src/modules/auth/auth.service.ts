@@ -4,10 +4,12 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, MoreThan } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
+import * as crypto from 'crypto';
+import { MailService } from '../../shared/mail/mail.service';
 import { User } from '../users/entities/user.entity';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
@@ -20,7 +22,8 @@ export class AuthService {
     private readonly userRepository: Repository<User>,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
-  ) {}
+    private readonly mailService: MailService,
+  ) { }
 
   async register(registerDto: RegisterDto): Promise<{ message: string }> {
     const existing = await this.userRepository.findOne({
@@ -31,7 +34,7 @@ export class AuthService {
     }
 
     const hashedPassword = await bcrypt.hash(registerDto.password, 12);
-    
+
     // TypeORM with cascade: true will save the profile automatically
     const user = this.userRepository.create({
       email: registerDto.email,
@@ -105,6 +108,55 @@ export class AuthService {
     } catch {
       throw new UnauthorizedException('Refresh token is invalid or expired.');
     }
+  }
+
+  async forgotPassword(email: string): Promise<{ message: string }> {
+    const user = await this.userRepository.findOne({ where: { email }, relations: { profile: true } });
+    console.log('user===>', user);
+    if (!user) {
+      return { message: 'If an account with that email exists, we have sent a password reset link.' };
+    }
+
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const hashedToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+
+    const expirationDate = new Date();
+    expirationDate.setHours(expirationDate.getHours() + 1);
+
+    user.resetPasswordToken = hashedToken;
+    user.resetPasswordExpires = expirationDate;
+    console.log('user 2===>', user);
+    await this.userRepository.save(user);
+
+    const firstName = user.profile?.firstName || 'User';
+    await this.mailService.sendPasswordResetEmail(user.email, firstName, resetToken);
+
+    return { message: 'If an account with that email exists, we have sent a password reset link.' };
+  }
+
+  async resetPassword(token: string, newPassword: string): Promise<{ message: string }> {
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+
+    const user = await this.userRepository.findOne({
+      where: {
+        resetPasswordToken: hashedToken,
+        resetPasswordExpires: MoreThan(new Date()),
+      },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException('Password reset token is invalid or has expired.');
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 12);
+
+    user.password = hashedPassword;
+    user.resetPasswordToken = null as unknown as string;
+    user.resetPasswordExpires = null as unknown as Date;
+
+    await this.userRepository.save(user);
+
+    return { message: 'Your password has been successfully reset. You can now login.' };
   }
 
   async getMe(userId: string): Promise<User> {

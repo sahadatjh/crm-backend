@@ -9,6 +9,8 @@ import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 import { Public } from '../../common/decorators/public.decorator';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { User } from '../users/entities/user.entity';
@@ -39,12 +41,26 @@ export class AuthController {
 
   @Public()
   @Post('refresh-tokens')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Get new access token using refresh token' })
+  @ApiOperation({ summary: 'Refresh access token' })
   @ApiResponse({ status: 200, description: 'Tokens refreshed' })
-  @ApiResponse({ status: 401, description: 'Invalid or expired refresh token' })
   refreshTokens(@Body() refreshTokenDto: RefreshTokenDto) {
     return this.authService.refreshTokens(refreshTokenDto.refreshToken);
+  }
+
+  @Public()
+  @Post('forgot-password')
+  @ApiOperation({ summary: 'Request password reset email' })
+  @ApiResponse({ status: 200, description: 'Email sent successfully' })
+  forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
+    return this.authService.forgotPassword(forgotPasswordDto.email);
+  }
+
+  @Public()
+  @Post('reset-password')
+  @ApiOperation({ summary: 'Reset user password using token' })
+  @ApiResponse({ status: 200, description: 'Password reset successfully' })
+  resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
+    return this.authService.resetPassword(resetPasswordDto.token, resetPasswordDto.newPassword);
   }
 
   @Get('me')

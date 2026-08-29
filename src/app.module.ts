@@ -3,7 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { APP_GUARD } from '@nestjs/core';
 
-import { appConfig, databaseConfig, jwtConfig, s3Config } from './config';
+import { appConfig, databaseConfig, jwtConfig, s3Config, mailConfig } from './config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './modules/auth/auth.module';
@@ -29,7 +29,7 @@ import { SeederModule } from './database/seeders/seeder.module';
     // Load .env and register all config namespaces globally
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [appConfig, databaseConfig, jwtConfig, s3Config],
+      load: [appConfig, databaseConfig, jwtConfig, s3Config, mailConfig],
     }),
 
     // TypeORM uses the 'database' namespace from databaseConfig
