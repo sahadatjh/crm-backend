@@ -123,6 +123,16 @@ export class DatabaseSeederService implements OnApplicationBootstrap {
           ['tasks', 'dashboard'].includes(p.module),
         ),
       },
+      {
+        name: SystemRoles.CLIENT,
+        description: 'Client portal access — read-only view of own invoices and projects',
+        isSystem: true,
+        permissions: allPermissions.filter((p) =>
+          p.slug === PermissionEnum.CLIENTS_READ ||
+          p.slug === PermissionEnum.INVOICES_READ ||
+          p.slug === PermissionEnum.DASHBOARD_READ,
+        ),
+      },
     ];
 
     for (const def of defaults) {

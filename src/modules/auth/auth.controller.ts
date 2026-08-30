@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, Res, UseGuards } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiOperation,
@@ -11,6 +11,9 @@ import { LoginDto } from './dto/login.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { ConfigService } from '@nestjs/config';
+import type { Request, Response } from 'express';
 import { Public } from '../../common/decorators/public.decorator';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { User } from '../users/entities/user.entity';
@@ -18,7 +21,10 @@ import { User } from '../users/entities/user.entity';
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly configService: ConfigService,
+  ) { }
 
   @Public()
   @Post('register')
@@ -70,5 +76,26 @@ export class AuthController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   getMe(@CurrentUser() user: User) {
     return this.authService.getMe(user.id);
+  }
+
+  // ─── Google OAuth ──────────────────────────────────────────────────────────
+
+  @Public()
+  @Get('google')
+  @UseGuards(AuthGuard('google'))
+  @ApiOperation({ summary: 'Initiate Google OAuth2 login flow' })
+  googleLogin() {
+    // Passport redirects to Google — no body needed
+  }
+
+  @Public()
+  @Get('google/callback')
+  @UseGuards(AuthGuard('google'))
+  @ApiOperation({ summary: 'Google OAuth2 callback — returns JWT tokens via redirect' })
+  async googleCallback(@Req() req: Request & { user: { accessToken: string; refreshToken: string } }, @Res() res: Response) {
+    const tokens = req.user as { accessToken: string; refreshToken: string };
+    const frontendUrl = this.configService.get<string>('mail.frontendUrl');
+    const redirectUrl = `${frontendUrl}/auth/callback?accessToken=${tokens.accessToken}&refreshToken=${tokens.refreshToken}`;
+    return res.redirect(redirectUrl);
   }
 }

@@ -14,12 +14,16 @@ import { User } from '../users/entities/user.entity';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { JwtPayload } from './strategies/jwt.strategy';
+import { SystemRoles } from '../../shared/enums/system-roles.enum';
+import { Role } from '../roles/entities/role.entity';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(Role)
+    private readonly roleRepository: Repository<Role>,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
     private readonly mailService: MailService,
@@ -159,9 +163,57 @@ export class AuthService {
     return { message: 'Your password has been successfully reset. You can now login.' };
   }
 
+  async validateGoogleUser(profile: {
+    googleId: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+  }): Promise<{ accessToken: string; refreshToken: string }> {
+    const { googleId, email, firstName, lastName } = profile;
+
+    // Try to find an existing user by email
+    let user = await this.userRepository.findOne({
+      where: { email },
+      relations: { roles: true },
+    });
+
+    if (user) {
+      // Link googleId if not already linked (e.g. existing email/password user)
+      if (!user.googleId) {
+        user.googleId = googleId;
+        await this.userRepository.save(user);
+      }
+    } else {
+      // New user — find the CLIENT role from DB
+      const clientRole = await this.roleRepository.findOne({
+        where: { name: SystemRoles.CLIENT },
+      });
+
+      user = this.userRepository.create({
+        email,
+        googleId,
+        isActive: true,
+        password: null as unknown as string, // Google users have no password
+        roles: clientRole ? [clientRole] : [],
+        profile: { firstName, lastName },
+      });
+
+      await this.userRepository.save(user);
+    }
+
+    const tokens = await this.generateTokens(user);
+
+    // Persist refresh token
+    user.refreshToken = tokens.refreshToken;
+    await this.userRepository.save(user);
+
+    return tokens;
+  }
+
   async getMe(userId: string): Promise<User> {
     return this.userRepository.findOneOrFail({ where: { id: userId } });
   }
+
 
   private async generateTokens(
     user: User,
